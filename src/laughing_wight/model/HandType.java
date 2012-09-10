@@ -10,4 +10,5 @@ public enum HandType implements Comparable<HandType>{
 		FULL_HOUSE,
 		FOUR_OF_A_KIND,
 		STRAIGHT_FLUSH;
+
 }
