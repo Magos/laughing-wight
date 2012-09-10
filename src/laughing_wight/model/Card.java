@@ -22,4 +22,24 @@ public class Card implements Comparable<Card>{
 		return value - o.value;
 	}
 
+	@Override
+	public String toString() {
+		String ret = "";
+		switch(suit){
+		case CLUBS:
+			ret = "C";
+			break;
+		case DIAMONDS:
+			ret = "D";
+			break;
+		case HEARTS:
+			ret = "H";
+			break;
+		case SPADES:
+			ret = "S";
+			break;
+		}
+		ret += value;
+		return ret;
+	}
 }

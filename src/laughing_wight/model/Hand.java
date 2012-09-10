@@ -14,12 +14,18 @@ public class Hand implements Comparable<Hand> {
 	}
 	
 	private HandType getHandType(Card[] cards) {
+		assert cards.length == 5;
 		List<Card> temp = Arrays.asList(cards);
 		Collections.sort(temp);
-		for(Card card : temp){
-			
+		for (int i = 0; i < temp.size(); i++) {
+			for (int j = 0 ; j < temp.size(); j++) {
+				if( i == j) continue;
+				if(temp.get(i).getValue() == temp.get(j).getValue()){
+					return HandType.PAIR;
+				}
+			}
 		}
-		return null;
+		return HandType.HIGH_CARD;
 	}
 
 	@Override
@@ -68,9 +74,37 @@ public class Hand implements Comparable<Hand> {
 					}
 					return tieBreak(HandType.HIGH_CARD, newHand1,newHand2);
 				}
+			case TWO_PAIR:
+				return 0;
+			case THREE_OF_A_KIND:
+				return 0;
+			case FOUR_OF_A_KIND:
+				return 0;
+			case FLUSH:
+				return 0;
+			case FULL_HOUSE:
+				return 0;
+			case STRAIGHT:
+				return 0;
+			case STRAIGHT_FLUSH:
+				return 0;
+			
 			default:
 				return 0;
 			}
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(type.toString());
+		builder.append(";");
+		for (int i = 0; i < cards.length; i++) {
+			builder.append(cards[i].toString());
+			builder.append(" ");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
 }

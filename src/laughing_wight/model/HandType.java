@@ -1,6 +1,6 @@
 package laughing_wight.model;
 
-public enum HandType implements Comparable<HandType>{
+public enum HandType{
 		HIGH_CARD,
 		PAIR,
 		TWO_PAIR,
