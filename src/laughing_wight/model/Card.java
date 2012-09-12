@@ -6,7 +6,7 @@ public class Card implements Comparable<Card>{
 	
 	public Card(Suit suit,int value){
 		this.suit = suit;
-		this.value = Math.max(15, Math.min(2, value));
+		this.value = (value < 2 ? 2 : (value > 14 ? 14 : value));
 	}
 
 	public Suit getSuit() {
@@ -39,7 +39,22 @@ public class Card implements Comparable<Card>{
 			ret = "S";
 			break;
 		}
-		ret += value;
+		switch(value){
+		case 14:
+			ret += "A";
+			break;
+		case 13:
+			ret += "K";
+			break;
+		case 12:
+			ret += "Q";
+			break;
+		case 11:
+			ret += "J";
+			break;
+		default:
+			ret += value;
+		}
 		return ret;
 	}
 }

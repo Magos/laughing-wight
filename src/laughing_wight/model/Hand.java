@@ -9,14 +9,31 @@ public class Hand implements Comparable<Hand> {
 	private HandType type;
 	
 	public Hand(Card[] cards){
-		type = getHandType(cards);
-		
-	}
-	
-	private HandType getHandType(Card[] cards) {
 		assert cards.length == 5;
 		List<Card> temp = Arrays.asList(cards);
 		Collections.sort(temp);
+		Card[] toSave = new Card[5];
+		for (int i = 0; i < toSave.length; i++) {
+			toSave[i] = temp.get(i);
+		}
+		this.cards = toSave;
+		type = getHandType(toSave);
+		
+	}
+	
+	public Card[] getCards() {
+		return cards;
+	}
+
+	public HandType getType() {
+		return type;
+	}
+
+	private static HandType getHandType(Card[] cards) {
+		assert cards.length == 5;
+		List<Card> temp = Arrays.asList(cards);
+		Collections.sort(temp);
+		
 		for (int i = 0; i < temp.size(); i++) {
 			for (int j = 0 ; j < temp.size(); j++) {
 				if( i == j) continue;
@@ -38,8 +55,8 @@ public class Hand implements Comparable<Hand> {
 		}
 	}
 
-	private static int tieBreak(HandType type2, Card[] hand1, Card[] hand2) {
-			switch(type2){
+	private static int tieBreak(HandType type, Card[] hand1, Card[] hand2) {
+			switch(type){
 			case HIGH_CARD:
 				for (int i = 0; i < hand1.length; i++) {
 					int comp = hand1[i].compareTo(hand2[i]);
