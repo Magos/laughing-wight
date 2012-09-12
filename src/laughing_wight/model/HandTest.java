@@ -75,7 +75,23 @@ public class HandTest {
 			previous.add(low);
 			previous.add(high);
 		}
-		
+
+	}
+
+	@Test
+	public void testTwoPair(){
+		Card d2 = new Card(Suit.DIAMONDS,2);
+		Card h2 = new Card(Suit.HEARTS,2);
+		Card s3 = new Card(Suit.SPADES,3);
+		Card s4 = new Card(Suit.SPADES,4);
+		Set<Hand> previous = new HashSet<Hand>();
+		for (int n = 3; n < 14; n++) {
+			Hand high = new Hand(new Card[]{d2,h2,(n == 3 ? s4 : s3), new Card(Suit.HEARTS,n), new Card(Suit.DIAMONDS,n)});
+			for (Hand hand : previous) {
+				assertTrue(hand.toString() + " >= " + high.toString(), high.compareTo(hand) > 0);
+			}
+			previous.add(high);
+		}
 	}
 
 
