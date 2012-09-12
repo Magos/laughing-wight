@@ -2,8 +2,6 @@ package laughing_wight.model;
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
@@ -72,6 +70,8 @@ public class HandTest {
 				assertTrue(low.compareTo(hand) > 0);
 			}
 			assertTrue(high.compareTo(low) > 0);
+			assertEquals(HandType.PAIR,high.getType());
+			assertEquals(HandType.PAIR, low.getType());
 			previous.add(low);
 			previous.add(high);
 		}
@@ -87,6 +87,7 @@ public class HandTest {
 		Set<Hand> previous = new HashSet<Hand>();
 		for (int n = 3; n < 14; n++) {
 			Hand high = new Hand(new Card[]{d2,h2,(n == 3 ? s4 : s3), new Card(Suit.HEARTS,n), new Card(Suit.DIAMONDS,n)});
+			assertEquals(HandType.TWO_PAIR, high.getType());
 			for (Hand hand : previous) {
 				assertTrue(hand.toString() + " >= " + high.toString(), high.compareTo(hand) > 0);
 			}
@@ -94,12 +95,22 @@ public class HandTest {
 		}
 	}
 
+	@Test
+	public void testThreeOfAKind(){
+		Card s2 = new Card(Suit.SPADES,2);
+		Card d4 = new Card(Suit.DIAMONDS,4);
+		Hand tripleThree = new Hand(new Card[]{s2,d4,new Card(Suit.DIAMONDS,3), new Card(Suit.HEARTS,3),new Card(Suit.CLUBS,3)});
+		assertEquals(HandType.THREE_OF_A_KIND, tripleThree.getType());
+	}
 
 	@Test
 	public void testDifferentHandTypes() {
+		Hand twoPair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)});
 		Hand onePair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
 		Hand highCard = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,12),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
 		assertTrue("High card > Pair", onePair.compareTo(highCard)>0);
+		assertTrue("High card > Two Pair", twoPair.compareTo(highCard)>0);
+		assertTrue("One Pair > Two Pair", twoPair.compareTo(onePair)>0);
 	}
 
 }

@@ -32,6 +32,7 @@ public class Hand implements Comparable<Hand> {
 	private static HandType getHandType(Card[] cards) {
 		assert cards.length == 5;
 
+		//Check for flushness and straightness.
 		boolean isFlush = isFlush(cards);
 		boolean isStraight = isStraight(cards);
 		if(isFlush && isStraight){
@@ -41,25 +42,37 @@ public class Hand implements Comparable<Hand> {
 		}else if(isStraight){
 			return HandType.STRAIGHT;
 		}
-		for (int i = cards.length-1; i > 1; i--) {
-			if(cards[i].getValue() == cards[i-1].getValue()){
-				//At least one pair.
-				if(i == 4 && //Full house involves every card, so just check for that here. 
-						(
-								(cards[3].getValue() == cards[2].getValue() && cards[1].getValue() == cards[0].getValue()) ||
-								(cards[2].getValue() == cards[1].getValue() && cards[1].getValue() == cards[0].getValue())
-						)
-						){
-					return HandType.FULL_HOUSE;
-				}
-				//See if there are two pairs.
-				for (int j = i-1; j > 0; j--) {
-					if(cards[j].getValue() == cards[j-1].getValue()){
-						return HandType.TWO_PAIR;
-					}
-				}
-				return HandType.PAIR;
+		
+		//Check value pairings.
+		int[] counts = new int[15];
+		for (int i = 0; i < cards.length; i++) {
+			int value = cards[i].getValue();
+			counts[value]++;
+		}
+		int highest = 0;
+		for (int i = 1; i < counts.length; i++) {
+			if(counts[i] > counts[highest]){
+				highest = i;
 			}
+		}
+		int nextHighest = 0;
+		for (int i = 1; i < counts.length; i++) {
+			if(counts[i] > counts[nextHighest] && i != highest){
+				nextHighest = i;
+			}
+		}
+		int highestCount = counts[highest];
+		int nextHighestCount = counts[nextHighest];
+		if(highestCount == 4){
+			return HandType.FOUR_OF_A_KIND;
+		}else if(highestCount == 3 && nextHighestCount == 2){
+			return HandType.FULL_HOUSE;
+		}else if(highestCount == 3 && nextHighestCount == 1){
+			return HandType.THREE_OF_A_KIND;
+		}else if(highestCount == 2 && nextHighestCount == 2){
+			return HandType.TWO_PAIR;
+		}else if(highestCount == 2 && nextHighestCount == 1){
+			return HandType.PAIR;
 		}
 		return HandType.HIGH_CARD;
 	}
