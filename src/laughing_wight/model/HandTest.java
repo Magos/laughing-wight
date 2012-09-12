@@ -1,7 +1,10 @@
 package laughing_wight.model;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
@@ -133,6 +136,18 @@ public class HandTest {
 				assertTrue(low.toString() + " >= " + hand.toString(),hand.compareTo(low) >0);
 			}
 		}
+	}
+	
+	@Test
+	public void testFlush(){
+		fail("Not yet implemented.");
+		for(Suit suit : Suit.values()){
+			for(int i = 2; i < 14;i++){
+				//Generate all selections of values in [2,14] not including i
+				//Create hands and compare based on high card.
+			}
+		}
+		
 	}
 
 	@Test
