@@ -1,7 +1,5 @@
+package laughing_wight.model;
 import static org.junit.Assert.*;
-import laughing_wight.model.Card;
-import laughing_wight.model.Hand;
-import laughing_wight.model.Suit;
 
 import org.junit.Test;
 
