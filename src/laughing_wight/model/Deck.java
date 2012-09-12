@@ -10,18 +10,19 @@ public class Deck {
 	public Deck(){
 		count = 51;
 		cards = new Card[52];
+		rand = new Random();
 		for(Suit suit : Suit.values()){
-			for (int i = 2; i < 14; i++) {
+			for (int i = 2; i < 15; i++) {
 				cards[suit.ordinal()*13 + i - 2] = new Card(suit,i);
 			}
 		}
 	}
 	
 	public Card draw(){
-		if(count <= 0 ){
+		if(count < 0 ){
 			throw new IllegalStateException("Drew from an empty card deck!");
 		}
-		int pick = rand.nextInt(count);
+		int pick = (count == 0 ? 0 : rand.nextInt(count));
 		Card ret = cards[pick];
 		cards[pick] = cards[count];
 		count--;

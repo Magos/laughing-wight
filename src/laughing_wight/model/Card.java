@@ -21,6 +21,23 @@ public class Card implements Comparable<Card>{
 	public int compareTo(Card o) {
 		return value - o.value;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(! (obj instanceof Card)){
+			return false;
+		}
+		Card other = (Card) obj;
+		return this.suit == other.suit && this.value == other.value;
+	}
+	
+	@Override
+	public int hashCode() {
+		int prime = 31;
+		int ret = prime * suit.ordinal();
+		ret += prime*value;
+		return ret;
+	}
 
 	@Override
 	public String toString() {
