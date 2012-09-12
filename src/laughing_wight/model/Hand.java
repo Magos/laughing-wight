@@ -32,10 +32,24 @@ public class Hand implements Comparable<Hand> {
 	private static HandType getHandType(Card[] cards) {
 		assert cards.length == 5;
 
+		boolean isFlush = isFlush(cards);
+		boolean isStraight = isStraight(cards);
+		if(isFlush && isStraight){
+			return HandType.STRAIGHT_FLUSH;
+		}else if(isFlush){
+			return HandType.FLUSH;
+		}else if(isStraight){
+			return HandType.STRAIGHT;
+		}
 		for (int i = cards.length-1; i > 1; i--) {
 			if(cards[i].getValue() == cards[i-1].getValue()){
 				//At least one pair.
-				if(i == 4 && cards[2].getValue() == cards[1].getValue() && cards[1].getValue() == cards[0].getValue()){//Full house involves every card, so check for that at the start.
+				if(i == 4 && //Full house involves every card, so just check for that here. 
+						(
+								(cards[3].getValue() == cards[2].getValue() && cards[1].getValue() == cards[0].getValue()) ||
+								(cards[2].getValue() == cards[1].getValue() && cards[1].getValue() == cards[0].getValue())
+						)
+						){
 					return HandType.FULL_HOUSE;
 				}
 				//See if there are two pairs.
@@ -48,6 +62,32 @@ public class Hand implements Comparable<Hand> {
 			}
 		}
 		return HandType.HIGH_CARD;
+	}
+	
+	private static boolean isStraight(Card[] cards) {
+		//Check for the 5 high special case (Where ace plays as 1 rather than 14).
+		if(cards[0].getValue()==2 && cards[1].getValue() == 3 && cards[2].getValue() == 4 && cards[3].getValue() == 5 && cards[4].getValue() == 14){
+			return true;
+		}
+		//Consider every other case.
+		int i = cards[0].getValue();
+		for (int j = 1; j < cards.length; j++) {
+			if(cards[j].getValue() != i++){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	
+	private static boolean isFlush(Card[] cards){
+		Suit suit = cards[0].getSuit();
+		for (int i = 1; i < cards.length; i++) {
+			if(cards[i].getSuit() != suit){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
