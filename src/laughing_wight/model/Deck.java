@@ -7,6 +7,7 @@ public class Deck {
 	private int count;
 	private Random rand;
 	
+	/** Create a new, shuffled deck of cards. */
 	public Deck(){
 		count = 51;
 		cards = new Card[52];
@@ -18,6 +19,7 @@ public class Deck {
 		}
 	}
 	
+	/** Draw a card from the deck. */
 	public Card draw(){
 		if(count < 0 ){
 			throw new IllegalStateException("Drew from an empty card deck!");
@@ -29,4 +31,8 @@ public class Deck {
 		return ret;
 	}
 
+	/** Get the count of cards remaining in the deck. */
+	public int getRemaining(){
+		return count+1;
+	}
 }
