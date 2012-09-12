@@ -101,12 +101,6 @@ public class Hand implements Comparable<Hand> {
 					pair22 = hand1[i].getValue();
 				}
 			}
-			int temp = Math.min(pair11, pair12);
-			pair11 = Math.max(pair11,pair12);
-			pair12 = temp;
-			temp = Math.min(pair21, pair22);
-			pair21 = Math.max(pair21, pair22);
-			pair22 = temp;
 			if(pair11 - pair21 != 0){
 				return pair11 - pair21;
 			}else if(pair12 - pair22 != 0){
