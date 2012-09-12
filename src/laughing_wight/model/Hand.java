@@ -76,20 +76,12 @@ public class Hand implements Comparable<Hand> {
 				}
 				if(pair1 - pair2 != 0){
 					return pair1 - pair2; //Higher pair wins
-				}else{//If same pairs, remove them and compare as high card.
-					Card[] newHand1 = new Card[3];
-					int hand1Pointer = 0;
-					Card[] newHand2 = new Card[3];
-					int hand2Pointer = 0;
-					for (int i = 0; i < hand1.length; i++) {
-						if(hand1[i].getValue() != pair1){
-							newHand1[++hand1Pointer] = hand1[i]; 
-						}
-						if(hand2[i].getValue() != pair1){
-							newHand2[++hand2Pointer] = hand2[i]; 
-						}
-					}
-					return tieBreak(HandType.HIGH_CARD, newHand1,newHand2);
+				}else{//If same pairs, ignore them and compare as high card.
+					return tieBreak(HandType.HIGH_CARD, hand1, hand2);
+//					for (int i = 0; i < hand1.length; i++) {
+//						int cmp = hand1[i].compareTo(hand2[i]);
+//						
+//					}
 				}
 			case TWO_PAIR:
 				return 0;
