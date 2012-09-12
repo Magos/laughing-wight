@@ -162,7 +162,20 @@ public class Hand implements Comparable<Hand> {
 				return tieBreak(HandType.HIGH_CARD, hand1, hand2);
 			}
 		case THREE_OF_A_KIND:
-			return 0;
+			pair1 = -1; pair2 = -1;
+			for (int i = 0; i < hand1.length-1; i++) {
+				if(hand1[i].getValue() == hand1[i+1].getValue()){
+					pair1 = hand1[i].getValue();
+				}
+				if(hand2[i].getValue() == hand2[i+1].getValue()){
+					pair2 = hand2[i].getValue();
+				}
+				if (pair1 - pair2 != 0){
+					return pair1 - pair2;
+				}else{
+					return tieBreak(HandType.HIGH_CARD,hand1,hand2);
+				}
+			}
 		case FOUR_OF_A_KIND:
 			return 0;
 		case FLUSH:

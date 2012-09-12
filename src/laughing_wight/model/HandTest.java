@@ -101,16 +101,32 @@ public class HandTest {
 		Card d4 = new Card(Suit.DIAMONDS,4);
 		Hand tripleThree = new Hand(new Card[]{s2,d4,new Card(Suit.DIAMONDS,3), new Card(Suit.HEARTS,3),new Card(Suit.CLUBS,3)});
 		assertEquals(HandType.THREE_OF_A_KIND, tripleThree.getType());
+		Hand tripleFour = new Hand(new Card[]{s2,new Card(Suit.CLUBS,3),d4,new Card(Suit.HEARTS, 4),new Card(Suit.SPADES,4)});
+		assertEquals(HandType.THREE_OF_A_KIND, tripleFour.getType());
+		assertTrue("Triple 3 >= triple 4", tripleFour.compareTo(tripleThree) > 0);
+		Set<Hand> previous = new HashSet<Hand>();
+		previous.add(tripleThree);
+		previous.add(tripleFour);
+		for (int i = 5; i < 14; i++) {
+			Hand high = new Hand(new Card[]{s2,d4,new Card(Suit.HEARTS,i),new Card(Suit.DIAMONDS,i), new Card(Suit.CLUBS,i)});
+			for (Hand hand : previous) {
+				assertTrue(hand.toString() + " >= " + high.toString(),high.compareTo(hand) > 0);
+			}
+		}
 	}
 
 	@Test
 	public void testDifferentHandTypes() {
+		Hand threeOfAKind = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,13),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)});
 		Hand twoPair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)});
 		Hand onePair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
 		Hand highCard = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,12),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
-		assertTrue("High card > Pair", onePair.compareTo(highCard)>0);
-		assertTrue("High card > Two Pair", twoPair.compareTo(highCard)>0);
-		assertTrue("One Pair > Two Pair", twoPair.compareTo(onePair)>0);
+		assertTrue("High card >= Three of a kind", threeOfAKind.compareTo(highCard) >0);
+		assertTrue("High card >= Pair", onePair.compareTo(highCard) >0);
+		assertTrue("High card >= Two Pair", twoPair.compareTo(highCard) >0);
+		assertTrue("One Pair >= Two Pair", twoPair.compareTo(onePair) >0);
+		assertTrue("One Pair >= Three of a kind", threeOfAKind.compareTo(onePair) >0);
+		assertTrue("Two Pair >= Three of a kind",threeOfAKind.compareTo(twoPair) >0);
 	}
 
 }
