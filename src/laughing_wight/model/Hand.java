@@ -58,7 +58,7 @@ public class Hand implements Comparable<Hand> {
 	private static int tieBreak(HandType type, Card[] hand1, Card[] hand2) {
 			switch(type){
 			case HIGH_CARD:
-				for (int i = 0; i < hand1.length; i++) {
+				for (int i = hand1.length-1; i > 0; i--) {//Reversed order to start at highest valued card.
 					int comp = hand1[i].compareTo(hand2[i]);
 					if(comp != 0) return comp;
 				}

@@ -47,14 +47,34 @@ public class HandTest {
 		Card c6 = new Card(Suit.CLUBS,6);
 		Card s4 = new Card(Suit.SPADES,4);
 		//Test that each possible pairing is valued correctly.
+		//Start with some special cases around the used junk cards
 		Hand pairFour = new Hand(new Card[]{s2,d3,c6,new Card(Suit.HEARTS,4), s4, new Card(Suit.CLUBS,8)});
 		assertTrue("Pair of fours is not a pair",pairFour.getType()==HandType.PAIR);
 		Set<Hand> previous = new HashSet<Hand>();
 		previous.add(pairFour);
 		Hand pairFive = new Hand(new Card[]{s2,d3,c6,d5,new Card(Suit.HEARTS,5), new Card(Suit.DIAMONDS,13)});
 		assertTrue("Pair of 5 < Pair of 4", pairFive.compareTo(pairFour) > 0);
-		Hand pairFiveLowkicker = new Hand(new Card[]{s2,d3,c6,d5,new Card(Suit.HEARTS,5), new Card(Suit.DIAMONDS,11)});
+		Hand pairFiveLowkicker = new Hand(new Card[]{s2,d3,c6,new Card(Suit.HEARTS,5), new Card(Suit.DIAMONDS,11)});
 		assertTrue("Pair of 5, king high loses to pair of 5 jack high.", pairFive.compareTo(pairFiveLowkicker) > 0);
+		previous.add(pairFive);
+		previous.add(pairFiveLowkicker);
+		Hand pairSix = new Hand(new Card[]{s2,d3,d5,c6,new Card(Suit.DIAMONDS,6)});
+		for (Hand hand : previous) {
+			assertTrue(pairSix.compareTo(hand) > 0);
+		}
+		previous.add(pairSix);
+		//Then do the higher cards on a loop.
+		for (int i = 7; i < 14; i++) {
+			Hand low = new Hand(new Card[]{s2,d3,s4,new Card(Suit.DIAMONDS,i),new Card(Suit.HEARTS,i)});
+			Hand high = new Hand(new Card[]{s2,d3,d5,new Card(Suit.DIAMONDS,i),new Card(Suit.HEARTS,i)});
+			for (Hand hand : previous) {
+				assertTrue(high.compareTo(hand) > 0);
+				assertTrue(low.compareTo(hand) > 0);
+			}
+			assertTrue(high.compareTo(low) > 0);
+			previous.add(low);
+			previous.add(high);
+		}
 		
 	}
 
@@ -63,7 +83,7 @@ public class HandTest {
 	public void testDifferentHandTypes() {
 		Hand onePair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
 		Hand highCard = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,12),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
-		assertTrue("Pair > High card", onePair.compareTo(highCard)>0);
+		assertTrue("High card > Pair", onePair.compareTo(highCard)>0);
 	}
 
 }
