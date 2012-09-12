@@ -85,7 +85,8 @@ public class Hand implements Comparable<Hand> {
 		//Consider every other case.
 		int i = cards[0].getValue();
 		for (int j = 1; j < cards.length; j++) {
-			if(cards[j].getValue() != i++){
+			i++;
+			if(cards[j].getValue() != i){
 				return false;
 			}
 		}
@@ -171,18 +172,19 @@ public class Hand implements Comparable<Hand> {
 					pair2 = hand2[i].getValue();
 				}
 				if (pair1 - pair2 != 0){
-					return pair1 - pair2;
+					return pair1 - pair2;//Highest pair wins.
 				}else{
-					return tieBreak(HandType.HIGH_CARD,hand1,hand2);
+					return tieBreak(HandType.HIGH_CARD,hand1,hand2);//Compare kickers.
 				}
 			}
-		case FOUR_OF_A_KIND:
-			return 0;
+		case STRAIGHT:
+			//The straight with the highest top card wins. Since ace always sorts to the end, compare the beginning instead to distinguish 5-high from ace-high.
+			return hand1[0].compareTo(hand2[0]);
 		case FLUSH:
 			return 0;
 		case FULL_HOUSE:
 			return 0;
-		case STRAIGHT:
+		case FOUR_OF_A_KIND:
 			return 0;
 		case STRAIGHT_FLUSH:
 			return 0;

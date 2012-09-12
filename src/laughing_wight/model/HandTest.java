@@ -114,13 +114,35 @@ public class HandTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testStraight(){
+		Hand FiveHigh = new Hand(new Card[]{new Card(Suit.DIAMONDS,14), new Card(Suit.SPADES,2), new Card(Suit.HEARTS,3), new Card(Suit.CLUBS,4), new Card(Suit.DIAMONDS,5)});
+		assertEquals(HandType.STRAIGHT,FiveHigh.getType());
+		Set<Hand> previous = new HashSet<Hand>(); 
+		previous.add(FiveHigh);
+		for (int i = 6; i < 14-5; i++) {
+			Card[] cards = new Card[5];
+			for (int j = 0; j < 5; j++) {
+				Suit suit = (j == 3 ? Suit.CLUBS : Suit.DIAMONDS);
+				cards[j] = new Card(suit,i+j);
+			}
+			Hand hand = new Hand(cards);
+			assertEquals(HandType.STRAIGHT,hand.getType());
+			for (Hand low : previous) {
+				assertTrue(low.toString() + " >= " + hand.toString(),hand.compareTo(low) >0);
+			}
+		}
+	}
 
 	@Test
 	public void testDifferentHandTypes() {
+		Hand straight = new Hand(new Card[]{new Card(Suit.CLUBS,4),new Card(Suit.HEARTS,5),new Card(Suit.HEARTS,6),new Card(Suit.CLUBS, 7), new Card(Suit.CLUBS,8)});
 		Hand threeOfAKind = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,13),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)});
 		Hand twoPair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)});
 		Hand onePair = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
 		Hand highCard = new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,12),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,8),new Card(Suit.HEARTS,4)});
+		assertTrue("High card >= Straight", straight.compareTo(highCard) >0);
 		assertTrue("High card >= Three of a kind", threeOfAKind.compareTo(highCard) >0);
 		assertTrue("High card >= Pair", onePair.compareTo(highCard) >0);
 		assertTrue("High card >= Two Pair", twoPair.compareTo(highCard) >0);
