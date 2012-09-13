@@ -1,12 +1,19 @@
 package laughing_wight.participants;
 
 import laughing_wight.model.Card;
+import laughing_wight.model.Round;
 
 public class State {
 	private int pot;
 	private Card flop1, flop2, flop3;
 	private Card turn;
 	private Card river;
+	private Round round;
+	
+	public State(){
+		pot = 0;
+		round = Round.PRE_FLOP;
+	}
 	
 	public int getPot() {
 		return pot;
@@ -30,5 +37,10 @@ public class State {
 		return new Card[]{flop1,flop2,flop3,turn,river};
 	}
 
+	public void setRound(Round round) {
+		this.round = round;
+	}
+
+	
 	
 }

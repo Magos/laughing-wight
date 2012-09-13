@@ -16,7 +16,11 @@ public class Player {
 	}
 	
 	public Action getAction(State state){
-		return strategy.selectAction(state);
+		if(strategy == null){
+			return Action.FOLD;
+		}else{			
+			return strategy.selectAction(state);
+		}
 	}
 
 }
