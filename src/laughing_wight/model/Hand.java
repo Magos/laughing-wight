@@ -178,16 +178,32 @@ public class Hand implements Comparable<Hand> {
 				return tieBreak(HandType.HIGH_CARD,hand1,hand2);//Compare kickers.
 			}
 		case STRAIGHT:
-			//The straight with the highest top card wins. Since ace always sorts to the end, compare the beginning instead to distinguish 5-high from ace-high.
-			return hand1[0].compareTo(hand2[0]);
+			//Check for 5-high
+			int high1 = (hand1[4].getValue() == 14 && hand1[3].getValue() == 5 ? 5 : hand1[4].getValue());
+			int high2 = (hand2[4].getValue() == 14 && hand2[3].getValue() == 5 ? 5 : hand2[4].getValue());
+			return high1 - high2;
 		case FLUSH:
 			return tieBreak(HandType.HIGH_CARD,hand1,hand2);//Highest card wins.
 		case FULL_HOUSE:
-			return 0;
+			//Highest triple wins.  
+			int cmp = hand1[2].getValue() - hand2[2].getValue(); //In every full house, the 3rd card is part of the triple, not the pair.
+			if(cmp != 0){
+				return cmp;
+			}
+			pair1 = (hand1[1].getValue() != hand1[2].getValue() ? hand1[1].getValue() : hand1[3].getValue());
+			pair2 = (hand2[1].getValue() != hand2[2].getValue() ? hand2[1].getValue() : hand2[3].getValue());
+			return pair1 - pair2;
 		case FOUR_OF_A_KIND:
-			return 0;
+			cmp = hand1[1].getValue() - hand2[1].getValue();
+			if(cmp != 0){
+				return cmp;
+			}
+			return tieBreak(HandType.HIGH_CARD, hand1, hand2);
 		case STRAIGHT_FLUSH:
-			return 0;
+			//As per straights.
+			high1 = (hand1[4].getValue() == 14 && hand1[3].getValue() == 5 ? 5 : hand1[4].getValue());
+			high2 = (hand2[4].getValue() == 14 && hand2[3].getValue() == 5 ? 5 : hand2[4].getValue());
+			return high1 - high2;
 
 		default:
 			assert false;

@@ -12,6 +12,11 @@ import org.junit.Test;
 
 public class HandTest {
 
+	private void checkGreater(Hand high, Hand low){
+		assertTrue(low.toString() +  " beat "  + high.toString(), high.compareTo(low) > 0 );
+		assertTrue(low.toString() +  " beat "  + high.toString(), low.compareTo(high) < 0 );
+	}
+	
 	@Test
 	public void testHand() {
 		assertNotNull(new Hand(new Card[]{new Card(Suit.HEARTS,13),new Card(Suit.DIAMONDS,13),new Card(Suit.SPADES,2),new Card(Suit.CLUBS,2),new Card(Suit.HEARTS,4)}));
@@ -32,7 +37,7 @@ public class HandTest {
 			Card highCard = new Card(Suit.DIAMONDS,i);
 			Hand high = new Hand(new Card[]{s2,d3,d5,c6,highCard});
 			for (Hand hand : previousHands) {				
-				assertTrue("High card " + hand.getCards()[0].toString() +  " beat "  + highCard.toString(), high.compareTo(hand) > 0 );
+				checkGreater(high,hand);
 			}
 			previousHands.add(high);
 			previous = highCard;
@@ -54,14 +59,14 @@ public class HandTest {
 		Set<Hand> previous = new HashSet<Hand>();
 		previous.add(pairFour);
 		Hand pairFive = new Hand(new Card[]{s2,d3,c6,d5,new Card(Suit.HEARTS,5), new Card(Suit.DIAMONDS,13)});
-		assertTrue("Pair of 5 < Pair of 4", pairFive.compareTo(pairFour) > 0);
+		checkGreater(pairFive,pairFour);
 		Hand pairFiveLowkicker = new Hand(new Card[]{s2,d3,c6,new Card(Suit.HEARTS,5), new Card(Suit.DIAMONDS,11)});
-		assertTrue("Pair of 5, king high loses to pair of 5 jack high.", pairFive.compareTo(pairFiveLowkicker) > 0);
+		checkGreater(pairFive, pairFiveLowkicker);
 		previous.add(pairFive);
 		previous.add(pairFiveLowkicker);
 		Hand pairSix = new Hand(new Card[]{s2,d3,d5,c6,new Card(Suit.DIAMONDS,6)});
 		for (Hand hand : previous) {
-			assertTrue(pairSix.compareTo(hand) > 0);
+			checkGreater(pairSix, hand);
 		}
 		previous.add(pairSix);
 		//Then do the higher cards on a loop.
@@ -69,10 +74,10 @@ public class HandTest {
 			Hand low = new Hand(new Card[]{s2,d3,s4,new Card(Suit.DIAMONDS,i),new Card(Suit.HEARTS,i)});
 			Hand high = new Hand(new Card[]{s2,d3,d5,new Card(Suit.DIAMONDS,i),new Card(Suit.HEARTS,i)});
 			for (Hand hand : previous) {
-				assertTrue(high.compareTo(hand) > 0);
-				assertTrue(low.compareTo(hand) > 0);
+				checkGreater(high,hand);
+				checkGreater(low,hand);
 			}
-			assertTrue(high.compareTo(low) > 0);
+			checkGreater(high,low);
 			assertEquals(HandType.PAIR,high.getType());
 			assertEquals(HandType.PAIR, low.getType());
 			previous.add(low);
@@ -81,6 +86,7 @@ public class HandTest {
 
 	}
 
+	
 	@Test
 	public void testTwoPair(){
 		Card d2 = new Card(Suit.DIAMONDS,2);
@@ -92,7 +98,7 @@ public class HandTest {
 			Hand high = new Hand(new Card[]{d2,h2,(n == 3 ? s4 : s3), new Card(Suit.HEARTS,n), new Card(Suit.DIAMONDS,n)});
 			assertEquals(HandType.TWO_PAIR, high.getType());
 			for (Hand hand : previous) {
-				assertTrue(hand.toString() + " >= " + high.toString(), high.compareTo(hand) > 0);
+				checkGreater(high,hand);
 			}
 			previous.add(high);
 		}
@@ -113,7 +119,7 @@ public class HandTest {
 		for (int i = 5; i < 14; i++) {
 			Hand high = new Hand(new Card[]{s2,d4,new Card(Suit.HEARTS,i),new Card(Suit.DIAMONDS,i), new Card(Suit.CLUBS,i)});
 			for (Hand hand : previous) {
-				assertTrue(hand.toString() + " >= " + high.toString(),high.compareTo(hand) > 0);
+				checkGreater(high,hand);
 			}
 		}
 	}
@@ -133,7 +139,7 @@ public class HandTest {
 			Hand hand = new Hand(cards);
 			assertEquals(HandType.STRAIGHT,hand.getType());
 			for (Hand low : previous) {
-				assertTrue(low.toString() + " >= " + hand.toString(),hand.compareTo(low) >0);
+				checkGreater(hand, low);
 			}
 		}
 	}
@@ -141,13 +147,44 @@ public class HandTest {
 	@Test
 	public void testFlush(){
 		fail("Not yet implemented.");
-		for(Suit suit : Suit.values()){
-			for(int i = 2; i < 14;i++){
-				//Generate all selections of values in [2,14] not including i
-				//Create hands and compare based on high card.
+//		for(Suit suit : Suit.values()){
+//			for(int i = 2; i < 14;i++){
+//				//Generate all selections of 5 distinct values in [2,14] which do not include i
+//				//Create hands and compare based on high card.
+//			}
+//		}
+		
+	}
+	
+	@Test
+	public void testFullHouse(){
+		Set<Hand> previous = new HashSet<Hand>();
+		for (int i = 2; i < 14; i++) {
+			for (int j = 2; j < 14; j++) {
+				if(i == j) continue;
+				Hand high = new Hand(new Card[]{new Card(Suit.HEARTS,i),new Card(Suit.DIAMONDS,i), new Card(Suit.CLUBS,i), new Card(Suit.DIAMONDS,j), new Card(Suit.SPADES,j)});
+				for (Hand hand : previous) {
+					checkGreater(high, hand);
+				}
+				previous.add(high);
 			}
 		}
-		
+	}
+	
+	@Test
+	public void testStraightFlush(){
+		for(Suit suit : Suit.values()){
+			Hand fiveHigh = new Hand(new Card[]{new Card(suit,14), new Card(suit,2), new Card(suit,3), new Card(suit,4), new Card(suit,5)});
+			Set<Hand> previous = new HashSet<Hand>();
+			previous.add(fiveHigh);
+			for(int i = 6; i < 14;i++){
+				Hand high = new Hand(new Card[]{new Card(suit,i-4), new Card(suit,i-3), new Card(suit,i-2), new Card(suit,i-1), new Card(suit,i)});
+				for (Hand hand : previous) {
+					checkGreater(high, hand);
+				}
+				previous.add(high);
+			}
+		}
 	}
 
 	@Test
