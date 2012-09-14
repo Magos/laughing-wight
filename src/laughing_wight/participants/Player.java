@@ -23,4 +23,10 @@ public class Player {
 		}
 	}
 
+	public void reset() {
+		holeCard1 = null;
+		holeCard2 = null;
+		strategy.reset();
+	}
+
 }

@@ -8,4 +8,9 @@ public class RolloutStrategy implements Strategy {
 		return Action.CALL;
 	}
 
+	@Override
+	public void reset() {
+		//Do nothing.
+	}
+
 }

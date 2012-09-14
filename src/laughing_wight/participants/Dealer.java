@@ -2,6 +2,7 @@ package laughing_wight.participants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +14,12 @@ import laughing_wight.model.Round;
 public class Dealer {
 	protected Deck deck;
 	private List<Player> players;
+	private List<Integer> playerBets;
+	private List<Action> moves;
 	private boolean gameInProgress;
 	private static Logger logger = LoggerFactory.getLogger(Dealer.class);
 	
 	public Dealer(){
-		deck = new Deck();
 		players = new ArrayList<Player>();
 		gameInProgress = false;
 	}
@@ -34,14 +36,7 @@ public class Dealer {
 	
 	public void runGame(){
 		gameInProgress = true;
-		logger.debug("Starting a game.");
-		for(int i = 0; i < players.size(); i++){
-			Card hole1 = deck.draw();
-			Card hole2 = deck.draw();
-			logger.trace("Player {} drew hole cards {} and {}", i,hole1, hole2);
-			players.get(i).dealHoleCards(hole1, hole2);
-		}
-		State game = new State();
+		State game = setupGame();
 		//Pre-flop betting.
 		doBetting(game);
 		
@@ -69,7 +64,24 @@ public class Dealer {
 		doBetting(game);
 		
 		//Showdown
+		
+		//Record game results. 
 		gameInProgress  = false;
+	}
+
+	private State setupGame() {
+		deck = new Deck();
+		logger.debug("Starting a game.");
+		
+		for(int i = 0; i < players.size(); i++){
+			players.get(i).reset();
+			Card hole1 = deck.draw();
+			Card hole2 = deck.draw();
+			logger.trace("Player {} drew hole cards {} and {}", i,hole1, hole2);
+			players.get(i).dealHoleCards(hole1, hole2);
+		}
+		State game = new State();
+		return game;
 	}
 
 	private void doBetting(State game) {
