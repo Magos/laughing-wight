@@ -18,6 +18,7 @@ public class Dealer implements GameState {
 
 	private List<Player> players;
 	private boolean gameInProgress;
+	private boolean onlyOnePlayer;
 
 	protected Deck deck;
 	private Round round;
@@ -109,6 +110,16 @@ public class Dealer implements GameState {
 		switch(action){
 		case FOLD:
 			active.put(ply,false);
+			int trues = 0;
+			for(Boolean inPlay : active.values()){
+				if(inPlay){
+					trues++;
+				}else{
+				}
+			}
+			if(trues == 1){//Only one player has not folded. Game ends.
+				//TODO:Implement clean end of play.
+			}
 			break;
 		case CALL:
 			bets.put(ply, Collections.max(bets.values()));
