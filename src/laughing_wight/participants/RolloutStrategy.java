@@ -4,7 +4,7 @@ package laughing_wight.participants;
 public class RolloutStrategy implements Strategy {
 
 	@Override
-	public Action selectAction(State state) {
+	public Action selectAction(GameState state) {
 		return Action.CALL;
 	}
 

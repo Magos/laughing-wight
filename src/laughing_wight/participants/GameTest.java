@@ -17,6 +17,10 @@ public class GameTest {
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
 		dealer.runGame();
+		Player player3 = new Player();
+		player3.setStrategy(rollOut);
+		dealer.addPlayer(player3);
+		dealer.runGame();
 	}
 
 }
