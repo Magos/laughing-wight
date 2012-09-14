@@ -146,13 +146,23 @@ public class HandTest {
 	
 	@Test
 	public void testFlush(){
-		fail("Not yet implemented.");
-//		for(Suit suit : Suit.values()){
-//			for(int i = 2; i < 14;i++){
-//				//Generate all selections of 5 distinct values in [2,14] which do not include i
-//				//Create hands and compare based on high card.
-//			}
-//		}
+		for(Suit suit : Suit.values()){
+			Set<Hand> previous = new HashSet<Hand>();
+			for(int i = 6; i < 14;i++){
+				Card[] cards = new Card[5];
+				for(int j = 0; j < 5; j++){
+					int temp = (j < 3 ? j : j+1);
+					Card card = new Card(suit,i - temp);
+					cards[j] = card;
+				}
+				Hand flush = new Hand(cards);
+				assertEquals(HandType.FLUSH,flush.getType());
+				for(Hand hand : previous){
+					checkGreater(flush, hand);
+				}
+				previous.add(flush);
+			}
+		}
 		
 	}
 	
