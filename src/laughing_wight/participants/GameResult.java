@@ -26,5 +26,16 @@ public class GameResult {
 		}
 		return ret;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder sb = new StringBuilder("[");
+		sb.append(bets.toString());
+		sb.append(", ");
+		sb.append(winners.toString());
+		sb.append("]");
+		return sb.toString();
+	}
 
 }

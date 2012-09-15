@@ -55,6 +55,8 @@ public class Card implements Comparable<Card>{
 		case SPADES:
 			ret = "S";
 			break;
+		default:
+			//Do nothing.
 		}
 		switch(value){
 		case 14:

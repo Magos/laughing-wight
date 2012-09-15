@@ -24,5 +24,14 @@ public class DeckTest {
 		}
 		assertTrue("Deck should contain all cards.", list.containsAll(allCards));
 	}
+	
+	@Test (expected=IllegalStateException.class)
+	public void testEmptyDeck(){
+		Deck deck = new Deck();
+		for(int i = 0; i < 53; i++){
+			assertEquals(52-i, deck.getRemaining());
+			deck.draw();
+		}
+	}
 
 }

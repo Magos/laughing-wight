@@ -3,10 +3,14 @@ package laughing_wight.participants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +93,8 @@ public class Dealer implements GameState {
 					if(entry.getValue() == true){
 						List<Player> winners = new ArrayList<Player>();
 						winners.add(entry.getKey());
+						
+						gameInProgress = false;
 						return new GameResult(bets, winners);
 					}
 				}
@@ -96,31 +102,43 @@ public class Dealer implements GameState {
 		}
 		
 		//We've reached showdown. Compare active players's cards.
-		List<Player> actives = new ArrayList<Player>();
+		//Get the active players.
+		List<PlayerAndHand> activePlayers = new ArrayList<PlayerAndHand>();
 		for(Entry<Player,Boolean> entry : active.entrySet()){
 			if(entry.getValue() == true){
-				actives.add(entry.getKey());
+				PlayerAndHand plyAndHand = new PlayerAndHand(entry.getKey(),getBestHand(entry.getKey()));
+				activePlayers.add(plyAndHand);
 			}
 		}
-		Map<Player,Hand> hands = new HashMap<Player,Hand>();
-		for(Player ply : actives){
-			hands.put(ply, getBestHand(ply));
+		//Edge case: Poor players might fold when they're the only player around.
+		assert activePlayers.size() > 0;
+		//Compare their hands.a
+		Collections.sort(activePlayers);
+		
+		//Get the winner, or tied winners.
+		List<Player> winners = new ArrayList<Player>();
+		winners.add(activePlayers.get(activePlayers.size()-1).player);
+		int i = activePlayers.size() - 2;
+		while(activePlayers.get(i).compareTo(activePlayers.get(activePlayers.size()-1)) == 0 && i > 0){
+			winners.add(activePlayers.get(i).player);
+			i--;
 		}
+		GameResult ret = new GameResult(bets, winners);
 		
-		
-		return null;
+		//End the game.
+		gameInProgress = false;
+		return ret;
 	}
 
 	private Hand getBestHand(Player ply) {
 		Card[] hole = holeCards.get(ply);
 		Hand[] allHands = new Hand[21]; 
 		Card[] available = new Card[]{hole[0],hole[1],communalCards[0], communalCards[1],communalCards[2],communalCards[3],communalCards[4]};
+		int counter = 0;
 		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 7; j++) {
-				if(i == j) continue;
-				allHands[i*7 + j] = generateHand(available,i, j);
+			for (int j = i+1; j < 7; j++) {
+				allHands[counter++] = generateHand(available,i, j);
 			}
-			
 		}
 		List<Hand> temp = Arrays.asList(allHands);
 		Collections.sort(temp);
@@ -140,7 +158,6 @@ public class Dealer implements GameState {
 	}
 
 	private void setupGame(int gameNumber) {
-		this.round = Round.PRE_FLOP;
 		deck = new Deck();
 		bets = new HashMap<Player,Integer>();
 		active = new HashMap<Player,Boolean>();
@@ -237,5 +254,22 @@ public class Dealer implements GameState {
 			ret += (bool ? 1 : 0);
 		}
 		return ret;
+	}
+	
+	private class PlayerAndHand implements Comparable<PlayerAndHand>{
+		Player player;
+		Hand hand;
+		public PlayerAndHand(Player player, Hand hand) {
+			this.player = player;
+			this.hand = hand;
+		}
+		@Override
+		public int compareTo(PlayerAndHand o) {
+			if(hand == null || o.hand == null){
+				return -1;
+			}
+			return hand.compareTo(o.hand);
+		}
+		
 	}
 }

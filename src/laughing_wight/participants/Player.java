@@ -5,8 +5,10 @@ import laughing_wight.model.Card;
 public class Player {
 	protected Card holeCard1, holeCard2;
 	private Strategy strategy;
+	private String name;
 	
-	public Player(){
+	public Player(String name){
+		this.name = name;
 	}
 	
 	public void dealHoleCards(Card holecard1, Card holecard2){
@@ -32,4 +34,8 @@ public class Player {
 		strategy.reset();
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }
