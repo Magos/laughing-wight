@@ -3,22 +3,18 @@ package laughing_wight.participants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import laughing_wight.model.Card;
 import laughing_wight.model.Deck;
 import laughing_wight.model.Hand;
 import laughing_wight.model.Round;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Dealer implements GameState {
 	private static Logger logger = LoggerFactory.getLogger(Dealer.class);
@@ -239,7 +235,7 @@ public class Dealer implements GameState {
 
 	@Override
 	public Card[] getCommunalCards() {
-		return communalCards;
+		return communalCards.clone();
 	}
 
 	@Override
