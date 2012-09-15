@@ -106,6 +106,9 @@ public class Hand implements Comparable<Hand> {
 
 	@Override
 	public int compareTo(Hand arg0) {
+		if(arg0 == null){
+			return 1;
+		}
 		int coarsecomparison = type.ordinal() - arg0.type.ordinal();
 		if(coarsecomparison != 0){ 
 			return coarsecomparison;

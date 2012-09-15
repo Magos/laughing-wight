@@ -1,17 +1,18 @@
 package laughing_wight.participants;
 
 import java.util.List;
+import java.util.Map;
 
 public class GameResult {
-	private int[] bets;
+	private Map<Player,Integer> bets;
 	private List<Player> winners;
 	
-	public GameResult(int[] bets, List<Player> winners){
+	public GameResult(Map<Player,Integer> bets, List<Player> winners){
 		this.bets = bets;
 		this.winners = winners;
 	}
 	
-	public int[] getBets() {
+	public Map<Player,Integer> getBets() {
 		return bets;
 	}
 	public List<Player> getWinners() {
@@ -20,7 +21,7 @@ public class GameResult {
 	
 	public int getPot(){
 		int ret = 0;
-		for(Integer i : bets){
+		for(Integer i : bets.values()){
 			ret += i;
 		}
 		return ret;

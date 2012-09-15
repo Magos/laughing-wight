@@ -1,16 +1,19 @@
 package laughing_wight.participants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import laughing_wight.model.Card;
 import laughing_wight.model.Deck;
+import laughing_wight.model.Hand;
 import laughing_wight.model.Round;
 
 public class Dealer implements GameState {
@@ -18,13 +21,13 @@ public class Dealer implements GameState {
 
 	private List<Player> players;
 	private boolean gameInProgress;
-	private boolean onlyOnePlayer;
-
+	
 	protected Deck deck;
 	private Round round;
 	private Card[] communalCards;
 	private Map<Player,Integer> bets;
 	private Map<Player,Boolean> active;
+	private Map<Player, Card[]> holeCards;
 
 
 
@@ -82,13 +85,58 @@ public class Dealer implements GameState {
 			
 			//Check for victory by folding.
 			if(getActivePlayerCount()== 1){
-				
+				for(Entry<Player,Boolean> entry : active.entrySet()){
+					if(entry.getValue() == true){
+						List<Player> winners = new ArrayList<Player>();
+						winners.add(entry.getKey());
+						return new GameResult(bets, winners);
+					}
+				}
 			}
 		}
 		
 		//We've reached showdown. Compare active players's cards.
+		List<Player> actives = new ArrayList<Player>();
+		for(Entry<Player,Boolean> entry : active.entrySet()){
+			if(entry.getValue() == true){
+				actives.add(entry.getKey());
+			}
+		}
+		Map<Player,Hand> hands = new HashMap<Player,Hand>();
+		for(Player ply : actives){
+			hands.put(ply, getBestHand(ply));
+		}
+		
 		
 		return null;
+	}
+
+	private Hand getBestHand(Player ply) {
+		Card[] hole = holeCards.get(ply);
+		Hand[] allHands = new Hand[21]; 
+		Card[] available = new Card[]{hole[0],hole[1],communalCards[0], communalCards[1],communalCards[2],communalCards[3],communalCards[4]};
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 7; j++) {
+				if(i == j) continue;
+				allHands[i*7 + j] = generateHand(available,i, j);
+			}
+			
+		}
+		List<Hand> temp = Arrays.asList(allHands);
+		Collections.sort(temp);
+		return temp.get(temp.size()-1);
+	}
+
+	private static Hand generateHand(Card[] available, int skip1, int skip2) {
+		assert available.length == 7;
+		Card[] cards = new Card[5];
+		for (int i = 0; i < 5; i++) {
+			int j = i;
+			if(j >= skip1) j++;
+			if(j >= skip2) j++;
+			cards[i] = available[j];
+		}
+		return new Hand(cards);
 	}
 
 	private void setupGame(int gameNumber) {
@@ -96,6 +144,7 @@ public class Dealer implements GameState {
 		deck = new Deck();
 		bets = new HashMap<Player,Integer>();
 		active = new HashMap<Player,Boolean>();
+		holeCards = new HashMap<Player,Card[]>();
 		for (Player ply : players) {
 			bets.put(ply, 0);
 			active.put(ply, true);
@@ -103,11 +152,13 @@ public class Dealer implements GameState {
 		logger.debug("Starting game {}.",gameNumber);
 
 		for(int i = 0; i < players.size(); i++){
-			players.get(i).reset();
+			Player ply = players.get(i);
+			ply.reset();
 			Card hole1 = deck.draw();
 			Card hole2 = deck.draw();
 			logger.trace("Player {} drew hole cards {} and {}", i,hole1, hole2);
-			players.get(i).dealHoleCards(hole1, hole2);
+			ply.dealHoleCards(hole1, hole2);
+			holeCards.put(ply,new Card[]{hole1,hole2});
 		}
 
 	}
