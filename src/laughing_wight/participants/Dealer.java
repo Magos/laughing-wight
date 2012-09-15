@@ -193,15 +193,23 @@ public class Dealer implements GameState {
 			active.put(ply,false);
 			break;
 		case CALL:
-			bets.put(ply, Collections.max(bets.values()));
+			call(ply);
 			break;
 		case BET:
-			bets.put(ply, Collections.max(bets.values())+1);
+			bet(ply);
 			break;
 		default:
 			assert false;
 		}
 
+	}
+
+	private void bet(Player ply) {
+		bets.put(ply, Collections.max(bets.values())+1);
+	}
+
+	private void call(Player ply) {
+		bets.put(ply, Collections.max(bets.values()));
 	}
 
 
