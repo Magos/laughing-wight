@@ -16,11 +16,11 @@ public class GameTest {
 		player2.setStrategy(rollOut);
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
-		dealer.runGame();
+		dealer.runGame(0);
 		Player player3 = new Player();
 		player3.setStrategy(new RandomStrategy());
 		dealer.addPlayer(player3);
-		dealer.runGame();
+		dealer.runGame(1);
 	}
 
 }

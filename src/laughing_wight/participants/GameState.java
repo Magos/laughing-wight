@@ -14,7 +14,11 @@ public interface GameState {
 	public abstract int getPot();
 
 	public abstract List<Player> getPlayers();
-
+	
+	public abstract boolean isPlayerActive(Player player);
+	
+	public abstract int getActivePlayerCount();
+	
 	public abstract Card[] getCommunalCards();
 
 }

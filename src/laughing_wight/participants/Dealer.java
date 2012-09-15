@@ -45,37 +45,53 @@ public class Dealer implements GameState {
 		players.remove(player);
 	}
 
-	public void runGame(){
+	public GameResult runGame(int gameNumber){
 		gameInProgress = true;
-		setupGame();
-		//Pre-flop betting.
-		doBetting();
+		setupGame(gameNumber);
 
-		//Flop
-		Card flop1, flop2, flop3;
-		flop1 = deck.draw();
-		flop2 = deck.draw();
-		flop3 = deck.draw();
-		logger.trace("Flop was {} {} {}",flop1, flop2, flop3);
-		doBetting();
-
-		//Turn
-		Card turn = deck.draw();
-		logger.trace("Turn was {}",turn);
-		doBetting();
-
-		//River
-		Card river = deck.draw();
-		logger.trace("River was {}",river);
-		doBetting();
-
-		//Showdown
-
-		//Record game results. 
-		gameInProgress  = false;
+		for(Round chosenRound : Round.values()){
+			this.round = chosenRound;
+			
+			//Deal cards, if any.
+			switch(round){
+			case FLOP:
+				Card flop1 = deck.draw();
+				Card flop2 = deck.draw();
+				Card flop3 = deck.draw();
+				logger.trace("Flop was {} {} {}.", flop1, flop2, flop3);
+				communalCards[0] = flop1;
+				communalCards[1] = flop2;
+				communalCards[2] = flop3;
+				break;
+			case TURN:
+				Card turn = deck.draw();
+				logger.trace("Turn was {}.", turn);
+				communalCards[3] = turn;
+				break;
+			case RIVER:
+				Card river = deck.draw();
+				logger.trace("River was {}.",river);
+				communalCards[4] = river;
+				break;
+			default:
+				//Do nothing.
+			}
+			
+			//Do betting
+			doBetting(gameNumber);
+			
+			//Check for victory by folding.
+			if(getActivePlayerCount()== 1){
+				
+			}
+		}
+		
+		//We've reached showdown. Compare active players's cards.
+		
+		return null;
 	}
 
-	private void setupGame() {
+	private void setupGame(int gameNumber) {
 		this.round = Round.PRE_FLOP;
 		deck = new Deck();
 		bets = new HashMap<Player,Integer>();
@@ -84,7 +100,7 @@ public class Dealer implements GameState {
 			bets.put(ply, 0);
 			active.put(ply, true);
 		}
-		logger.debug("Starting a game.");
+		logger.debug("Starting game {}.",gameNumber);
 
 		for(int i = 0; i < players.size(); i++){
 			players.get(i).reset();
@@ -96,12 +112,13 @@ public class Dealer implements GameState {
 
 	}
 
-	private void doBetting() {
+	private void doBetting(int gameNumber) {
 		for(int i = 0; i < players.size(); i++){
-			Player ply = players.get(i);
+			int j = (i + gameNumber) % players.size();
+			Player ply = players.get(j);
 			if(!active.get(ply))continue;
 			Action action = ply.getAction(this);
-			logger.trace("Player {} chose action {}.",i,action);
+			logger.trace("Player {} chose action {}.",j,action);
 			updateState(ply,action);
 		}
 	}
@@ -110,16 +127,6 @@ public class Dealer implements GameState {
 		switch(action){
 		case FOLD:
 			active.put(ply,false);
-			int trues = 0;
-			for(Boolean inPlay : active.values()){
-				if(inPlay){
-					trues++;
-				}else{
-				}
-			}
-			if(trues == 1){//Only one player has not folded. Game ends.
-				//TODO:Implement clean end of play.
-			}
 			break;
 		case CALL:
 			bets.put(ply, Collections.max(bets.values()));
@@ -165,5 +172,19 @@ public class Dealer implements GameState {
 	@Override
 	public Card[] getCommunalCards() {
 		return communalCards;
+	}
+
+	@Override
+	public boolean isPlayerActive(Player player) {
+		return active.get(player);
+	}
+
+	@Override
+	public int getActivePlayerCount() {
+		int ret = 0;
+		for(Boolean bool : active.values()){
+			ret += (bool ? 1 : 0);
+		}
+		return ret;
 	}
 }
