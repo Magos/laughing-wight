@@ -12,4 +12,11 @@ public class RolloutResult implements Serializable{
 		this.suited = suited;
 		this.unSuited = unSuited;
 	}
+	
+	/** Get a win ratio of a player with these hole cards for this table size, averaged over many rounds. */
+	public double winRatio(int tableSize, Card holeCard1, Card holeCard2){
+		if(tableSize > 10 || tableSize < 2 || holeCard1 == null || holeCard2 == null) return -1;
+		double[][][] applicable = (holeCard1.getSuit() == holeCard2.getSuit() ? suited : unSuited);
+		return applicable[tableSize-2][holeCard1.getValue()-2][holeCard2.getValue()-2];
+	}
 }

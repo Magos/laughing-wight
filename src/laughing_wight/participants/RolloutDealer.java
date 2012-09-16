@@ -13,7 +13,7 @@ import laughing_wight.model.Suit;
 
 
 public class RolloutDealer extends Dealer {
-	private static final int NUM_TESTS = 250;
+	private static final int NUM_TESTS = 25000;
 	
 	private Card hole1, hole2;
 	
