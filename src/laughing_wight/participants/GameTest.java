@@ -25,7 +25,7 @@ public class GameTest {
 		Dealer dealer = new Dealer();
 		Player player1 = new RandomPlayer("Alice");
 		Player player2 = new SimplePlayer("Bob");
-		Player player3 = new RandomPlayer("Carol");
+		Player player3 = new PhaseIIPlayer("Carol");
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
 		dealer.addPlayer(player3);
@@ -40,7 +40,7 @@ public class GameTest {
 			player2Earnings += (result.getWinners().contains(player2) ? winnings : 0) - result.getBets().get(player2);
 			player3Earnings += (result.getWinners().contains(player3) ? winnings : 0) - result.getBets().get(player3);
 		}
-		logger.info("Total earnings were Alice={} Bob={} Carol={}.",player1Earnings,player2Earnings,player3Earnings);
+		logger.info("Total earnings were Alice = {}, Bob = {},  Carol = {}.",player1Earnings,player2Earnings,player3Earnings);
 	}
 
 }

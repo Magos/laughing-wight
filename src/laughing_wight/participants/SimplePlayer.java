@@ -7,6 +7,7 @@ import laughing_wight.model.Hand;
 import laughing_wight.model.HandType;
 import laughing_wight.model.Round;
 
+/** A simplistic player which only bets on certain kinds of hand or better.*/
 public class SimplePlayer extends Player {
 	private static HandType MINIMUM_CALL = HandType.PAIR;
 	private static HandType MINIMUM_BET = HandType.TWO_PAIR;
