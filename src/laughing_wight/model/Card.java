@@ -42,7 +42,7 @@ public class Card implements Comparable<Card>{
 
 	@Override
 	public String toString() {
-		String ret = "";
+		String ret = null;
 		switch(suit){
 		case CLUBS:
 			ret = "C";

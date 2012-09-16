@@ -135,6 +135,7 @@ public class Dealer implements GameState {
 		players = new ArrayList<Player>();
 		for(Player ply : queuedPlayers){
 			players.add(ply);
+			ply.reset();
 		}
 		lastFolder = null;
 		//Shuffle the deck and clear the game state.
