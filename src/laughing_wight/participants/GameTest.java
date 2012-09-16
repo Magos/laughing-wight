@@ -38,9 +38,10 @@ public class GameTest {
 		for (int i = 0; i < 10000; i++) {
 			GameResult result = dealer.runGame(i);
 			logger.debug("Result was {}.",result);
-			player1Earnings += (result.getWinners().contains(player1) ? result.getPot() / result.getWinners().size() : 0) - result.getBets().get(player1);
-			player2Earnings += (result.getWinners().contains(player2) ? result.getPot() / result.getWinners().size() : 0) - result.getBets().get(player2);
-			player3Earnings += (result.getWinners().contains(player3) ? result.getPot() / result.getWinners().size() : 0) - result.getBets().get(player3);
+			int winnings = result.getPot() / result.getWinners().size();
+			player1Earnings += (result.getWinners().contains(player1) ? winnings : 0) - result.getBets().get(player1);
+			player2Earnings += (result.getWinners().contains(player2) ? winnings : 0) - result.getBets().get(player2);
+			player3Earnings += (result.getWinners().contains(player3) ? winnings : 0) - result.getBets().get(player3);
 		}
 		logger.info("Total earnings were Alice={} Bob={} Carol={}.",player1Earnings,player2Earnings,player3Earnings);
 	}
