@@ -19,6 +19,7 @@ public class Card implements Comparable<Card>{
 
 	@Override
 	public int compareTo(Card o) {
+		if(o == null){return 1;}
 		return value - o.value;
 	}
 	

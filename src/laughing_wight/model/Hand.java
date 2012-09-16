@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import laughing_wight.participants.Player;
+
 public class Hand implements Comparable<Hand> {
 	private Card[] cards = new Card[5];
 	private HandType type;
@@ -42,7 +44,7 @@ public class Hand implements Comparable<Hand> {
 		}else if(isStraight){
 			return HandType.STRAIGHT;
 		}
-		
+
 		//Check value pairings.
 		int[] counts = new int[15];
 		for (int i = 0; i < cards.length; i++) {
@@ -76,7 +78,7 @@ public class Hand implements Comparable<Hand> {
 		}
 		return HandType.HIGH_CARD;
 	}
-	
+
 	private static boolean isStraight(Card[] cards) {
 		//Check for the 5 high special case (Where ace plays as 1 rather than 14).
 		if(cards[0].getValue()==2 && cards[1].getValue() == 3 && cards[2].getValue() == 4 && cards[3].getValue() == 5 && cards[4].getValue() == 14){
@@ -93,7 +95,7 @@ public class Hand implements Comparable<Hand> {
 		return true;
 	}
 
-	
+
 	private static boolean isFlush(Card[] cards){
 		Suit suit = cards[0].getSuit();
 		for (int i = 1; i < cards.length; i++) {
@@ -115,6 +117,42 @@ public class Hand implements Comparable<Hand> {
 		}else{
 			return tieBreak(type, this.cards,arg0.cards);
 		}
+	}
+
+	public static Hand getBestHand(Card[] hole, Card[] communalCards) {
+		assert hole.length == 2;
+		assert communalCards.length == 5;
+		Hand[] allHands = new Hand[21]; 
+		Card[] available = new Card[]{hole[0],hole[1],communalCards[0], communalCards[1],communalCards[2],communalCards[3],communalCards[4]};
+		int counter = 0;
+		for (int i = 0; i < 7; i++) {
+			for (int j = i+1; j < 7; j++) {
+				Hand hand =  generateHand(available,i, j);
+				if(hand != null){
+					allHands[counter++] = hand;
+				}
+			}
+		}
+		if(counter > 0){
+			List<Hand> temp = Arrays.asList(allHands).subList(0, counter);
+			Collections.sort(temp);
+			return temp.get(temp.size()-1);
+		}else{
+			return null;
+		}
+	}
+
+	private static Hand generateHand(Card[] available, int skip1, int skip2) {
+		assert available.length == 7;
+		Card[] cards = new Card[5];
+		for (int i = 0; i < 5; i++) {
+			int j = i;
+			if(j >= skip1) j++;
+			if(j >= skip2) j++;
+			if(available[j] == null) return null;
+			cards[i] = available[j];
+		}
+		return new Hand(cards);
 	}
 
 	private static int tieBreak(HandType type, Card[] hand1, Card[] hand2) {

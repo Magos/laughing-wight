@@ -11,18 +11,14 @@ public class GameTest {
 	private static Logger logger = LoggerFactory.getLogger(GameTest.class);
 	
 	@Test
-	public void testStartGame() {
+	public void testRunGame() {
 		Dealer dealer = new Dealer();
-		Player player1 = new Player("Alice");
-		Player player2 = new Player("Bob");
-		Strategy rollOut = new RolloutStrategy();
-		player1.setStrategy(rollOut);
-		player2.setStrategy(rollOut);
+		Player player1 = new RolloutPlayer("Alice");
+		Player player2 = new RolloutPlayer("Bob");
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
 		dealer.runGame(0);
-		Player player3 = new Player("Carol");
-		player3.setStrategy(new RandomStrategy());
+		Player player3 = new RandomPlayer("Carol");
 		dealer.addPlayer(player3);
 		dealer.runGame(1);
 	}
@@ -30,13 +26,9 @@ public class GameTest {
 	@Test
 	public void testManyGames(){
 		Dealer dealer = new Dealer();
-		Player player1 = new Player("Alice");
-		Player player2 = new Player("Bob");
-		Player player3 = new Player("Carol");
-		Strategy random = new RandomStrategy();
-		player1.setStrategy(random);
-		player2.setStrategy(random);
-		player3.setStrategy(random);
+		Player player1 = new RandomPlayer("Alice");
+		Player player2 = new SimplePlayer("Bob");
+		Player player3 = new RandomPlayer("Carol");
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
 		dealer.addPlayer(player3);

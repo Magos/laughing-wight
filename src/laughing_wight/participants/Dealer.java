@@ -17,10 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Dealer implements GameState {
+	private static final int SMALL_BLIND = 1;
+
+	private static final int BIG_BLIND = 2;
+
 	private static Logger logger = LoggerFactory.getLogger(Dealer.class);
 
+	private List<Player> queuedPlayers;
 	private List<Player> players;
-	private boolean gameInProgress;
 	
 	protected Deck deck;
 	private Round round;
@@ -28,28 +32,25 @@ public class Dealer implements GameState {
 	private Map<Player,Integer> bets;
 	private Map<Player,Boolean> active;
 	private Map<Player, Card[]> holeCards;
+	private Player lastFolder;
 
 
 
 
 	public Dealer(){
-		players = new ArrayList<Player>();
-		gameInProgress = false;
+		queuedPlayers = new ArrayList<Player>();
 		communalCards = new Card[5];
 	}
 
 	public void addPlayer(Player player){
-		if(gameInProgress) return;
-		players.add(player);
+		queuedPlayers.add(player);
 	}
 
 	public void removePlayer(Player player){
-		if(gameInProgress) return;
-		players.remove(player);
+		queuedPlayers.remove(player);
 	}
 
 	public GameResult runGame(int gameNumber){
-		gameInProgress = true;
 		setupGame(gameNumber);
 
 		for(Round chosenRound : Round.values()){
@@ -90,10 +91,14 @@ public class Dealer implements GameState {
 						List<Player> winners = new ArrayList<Player>();
 						winners.add(entry.getKey());
 						
-						gameInProgress = false;
 						return new GameResult(bets, winners);
 					}
 				}
+			}else if(getActivePlayerCount() == 0){ //This works around simplistic players who might fold despite being the only player in the game.
+				List<Player> winners = new ArrayList<Player>();
+				winners.add(lastFolder);
+				
+				return new GameResult(bets, winners);
 			}
 		}
 		
@@ -102,7 +107,7 @@ public class Dealer implements GameState {
 		List<PlayerAndHand> activePlayers = new ArrayList<PlayerAndHand>();
 		for(Entry<Player,Boolean> entry : active.entrySet()){
 			if(entry.getValue() == true){
-				PlayerAndHand plyAndHand = new PlayerAndHand(entry.getKey(),getBestHand(entry.getKey()));
+				PlayerAndHand plyAndHand = new PlayerAndHand(entry.getKey(),Hand.getBestHand(holeCards.get(entry.getKey()), communalCards));
 				activePlayers.add(plyAndHand);
 			}
 		}
@@ -120,40 +125,19 @@ public class Dealer implements GameState {
 			i--;
 		}
 		GameResult ret = new GameResult(bets, winners);
-		
-		//End the game.
-		gameInProgress = false;
 		return ret;
 	}
 
-	private Hand getBestHand(Player ply) {
-		Card[] hole = holeCards.get(ply);
-		Hand[] allHands = new Hand[21]; 
-		Card[] available = new Card[]{hole[0],hole[1],communalCards[0], communalCards[1],communalCards[2],communalCards[3],communalCards[4]};
-		int counter = 0;
-		for (int i = 0; i < 7; i++) {
-			for (int j = i+1; j < 7; j++) {
-				allHands[counter++] = generateHand(available,i, j);
-			}
-		}
-		List<Hand> temp = Arrays.asList(allHands);
-		Collections.sort(temp);
-		return temp.get(temp.size()-1);
-	}
-
-	private static Hand generateHand(Card[] available, int skip1, int skip2) {
-		assert available.length == 7;
-		Card[] cards = new Card[5];
-		for (int i = 0; i < 5; i++) {
-			int j = i;
-			if(j >= skip1) j++;
-			if(j >= skip2) j++;
-			cards[i] = available[j];
-		}
-		return new Hand(cards);
-	}
+	
 
 	private void setupGame(int gameNumber) {
+		//Copy the canonical playerlist from the editable list.
+		players = new ArrayList<Player>();
+		for(Player ply : queuedPlayers){
+			players.add(ply);
+		}
+		lastFolder = null;
+		//Shuffle the deck and clear the game state.
 		deck = new Deck();
 		bets = new HashMap<Player,Integer>();
 		active = new HashMap<Player,Boolean>();
@@ -163,7 +147,15 @@ public class Dealer implements GameState {
 			active.put(ply, true);
 		}
 		logger.debug("Starting game {}.",gameNumber);
+		
+		//Blinds are posted.
+		int firstMover = (0 + gameNumber) % players.size();
+		int bigBlind = (firstMover + players.size() - 1) % players.size();
+		int smallBlind = (firstMover + players.size() - 2) % players.size();
+		bets.put(players.get(bigBlind), BIG_BLIND);
+		bets.put(players.get(smallBlind), SMALL_BLIND);
 
+		//Draw hole cards.
 		for(int i = 0; i < players.size(); i++){
 			Player ply = players.get(i);
 			ply.reset();
@@ -177,6 +169,7 @@ public class Dealer implements GameState {
 	}
 
 	private void doBetting(int gameNumber) {
+		logger.trace("Betting round begins; bets stand at {}.",bets);
 		for(int i = 0; i < players.size(); i++){
 			int j = (i + gameNumber) % players.size();
 			Player ply = players.get(j);
@@ -185,12 +178,14 @@ public class Dealer implements GameState {
 			logger.trace("Player {} chose action {}.",j,action);
 			updateState(ply,action);
 		}
+		logger.trace("Betting round ends; bets stand at {}.",bets);
 	}
 
 	private void updateState(Player ply, Action action) {
 		switch(action){
 		case FOLD:
 			active.put(ply,false);
+			lastFolder = ply;
 			break;
 		case CALL:
 			call(ply);
@@ -237,7 +232,7 @@ public class Dealer implements GameState {
 
 	@Override
 	public List<Player> getPlayers() {
-		return players;
+		return queuedPlayers;
 	}
 
 

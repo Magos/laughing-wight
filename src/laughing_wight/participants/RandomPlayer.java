@@ -2,10 +2,14 @@ package laughing_wight.participants;
 
 import java.util.Random;
 
-public class RandomStrategy implements Strategy {
+public class RandomPlayer extends Player {
+
+	public RandomPlayer(String name) {
+		super(name);
+	}
 
 	@Override
-	public Action selectAction(GameState state) {
+	public Action getAction(GameState state) {
 		if(state.getActivePlayerCount()==1){
 			return Action.CALL;//Always call if this round of betting ends in our win.
 		}
