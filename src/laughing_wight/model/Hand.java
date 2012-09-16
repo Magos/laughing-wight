@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import laughing_wight.participants.Player;
-
 public class Hand implements Comparable<Hand> {
 	private Card[] cards = new Card[5];
 	private HandType type;

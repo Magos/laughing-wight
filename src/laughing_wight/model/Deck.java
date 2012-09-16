@@ -3,8 +3,8 @@ package laughing_wight.model;
 import java.util.Random;
 
 public class Deck {
-	private Card[] cards;
-	private int count;
+	protected Card[] cards;
+	protected int count;
 	private Random rand;
 	
 	/** Create a new, shuffled deck of cards. */

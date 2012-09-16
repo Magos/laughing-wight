@@ -1,7 +1,6 @@
 package laughing_wight.participants;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +20,17 @@ public class Dealer implements GameState {
 
 	private static final int BIG_BLIND = 2;
 
-	private static Logger logger = LoggerFactory.getLogger(Dealer.class);
+	protected static Logger logger = LoggerFactory.getLogger(Dealer.class);
 
 	private List<Player> queuedPlayers;
-	private List<Player> players;
+	protected List<Player> players;
 	
 	protected Deck deck;
 	private Round round;
 	private Card[] communalCards;
-	private Map<Player,Integer> bets;
-	private Map<Player,Boolean> active;
-	private Map<Player, Card[]> holeCards;
+	protected Map<Player,Integer> bets;
+	protected Map<Player,Boolean> active;
+	protected Map<Player, Card[]> holeCards;
 	private Player lastFolder;
 
 
@@ -139,15 +138,7 @@ public class Dealer implements GameState {
 		}
 		lastFolder = null;
 		//Shuffle the deck and clear the game state.
-		deck = new Deck();
-		bets = new HashMap<Player,Integer>();
-		active = new HashMap<Player,Boolean>();
-		holeCards = new HashMap<Player,Card[]>();
-		for (Player ply : players) {
-			bets.put(ply, 0);
-			active.put(ply, true);
-		}
-		logger.debug("Starting game {}.",gameNumber);
+		resetGame(gameNumber);
 		
 		//Blinds are posted.
 		int firstMover = (0 + gameNumber) % players.size();
@@ -157,6 +148,11 @@ public class Dealer implements GameState {
 		bets.put(players.get(smallBlind), SMALL_BLIND);
 
 		//Draw hole cards.
+		drawHoleCards();
+
+	}
+
+	protected void drawHoleCards() {
 		for(int i = 0; i < players.size(); i++){
 			Player ply = players.get(i);
 			ply.reset();
@@ -166,7 +162,18 @@ public class Dealer implements GameState {
 			ply.dealHoleCards(hole1, hole2);
 			holeCards.put(ply,new Card[]{hole1,hole2});
 		}
+	}
 
+	protected void resetGame(int gameNumber) {
+		deck = new Deck();
+		bets = new HashMap<Player,Integer>();
+		active = new HashMap<Player,Boolean>();
+		holeCards = new HashMap<Player,Card[]>();
+		for (Player ply : players) {
+			bets.put(ply, 0);
+			active.put(ply, true);
+		}
+		logger.debug("Starting game {}.",gameNumber);
 	}
 
 	private void doBetting(int gameNumber) {
