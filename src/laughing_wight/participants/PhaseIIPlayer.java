@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import laughing_wight.model.Card;
+import laughing_wight.model.Hand;
 import laughing_wight.model.RolloutResult;
 import laughing_wight.model.Round;
 
@@ -53,9 +55,18 @@ public class PhaseIIPlayer extends Player {
 				return Action.FOLD;
 			}
 		}
-		
-		//TODO:Hand strength calculations.
-		return Action.CALL;
+		Card[] hole = new Card[]{holeCard1,holeCard2};
+		Card[] communalCards = state.getCommunalCards();
+		Hand myHand = Hand.getBestHand(hole, communalCards);
+		double handStrength = HandStrengthCalculator.calculateHandStrength(hole,communalCards, myHand, state.getActivePlayerCount());
+		logger.trace("Hand strength with hand {} was {}",myHand,handStrength);
+		if(handStrength > 0.6){
+			return Action.BET;
+		}else if(handStrength > 0.15){
+			return Action.CALL;
+		}else{
+			return Action.FOLD;
+		}
 	}
 
 }

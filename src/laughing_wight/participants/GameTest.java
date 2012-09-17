@@ -32,7 +32,7 @@ public class GameTest {
 		int player1Earnings = 0;
 		int player2Earnings = 0;
 		int player3Earnings = 0;
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			GameResult result = dealer.runGame(i);
 			logger.debug("Result was {}.",result);
 			int winnings = result.getPot() / result.getWinners().size();
