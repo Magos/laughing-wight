@@ -20,6 +20,9 @@ public class SimplePlayer extends Player {
 	
 	@Override
 	public Action getAction(GameState state) {
+		if(state.getActivePlayerCount()==1){
+			return Action.CALL;
+		}
 		if(state.getRound() == Round.PRE_FLOP){
 			if(random.nextFloat() >= 0.5f){
 				return Action.CALL;

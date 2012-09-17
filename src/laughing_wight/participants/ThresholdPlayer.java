@@ -1,9 +1,5 @@
 package laughing_wight.participants;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -11,27 +7,24 @@ import org.slf4j.LoggerFactory;
 
 import laughing_wight.model.Card;
 import laughing_wight.model.Hand;
-import laughing_wight.model.RolloutResult;
 import laughing_wight.model.Round;
 
-public class PhaseIIThresholdPlayer extends Player {
-	private static final double CALL_THRESHOLD_MEAN = 0.2;
-	private static final double BET_THRESHOLD_MEAN = 0.55;
-	private static final double VARIANCE = 0.15;
+public class ThresholdPlayer extends PhaseIIPlayer {
+	private static final double CALL_THRESHOLD_MEAN = 0.15;
+	private static final double BET_THRESHOLD_MEAN = 0.6;
+	private static final double VARIANCE = 0.1;
 	
 	private double CALL_THRESHOLD;
 	private double BET_THRESHOLD;
-	private RolloutResult rollout;
-	private static Logger logger = LoggerFactory.getLogger(PhaseIIThresholdPlayer.class);
+	private static Logger logger = LoggerFactory.getLogger(ThresholdPlayer.class);
 
-	public PhaseIIThresholdPlayer(String name) {
+	public ThresholdPlayer(String name) {
 		super(name);
 		double scaleFactor = getScaleFactor();
 		CALL_THRESHOLD = CALL_THRESHOLD_MEAN + VARIANCE*scaleFactor;
 		scaleFactor = getScaleFactor();
 		BET_THRESHOLD = BET_THRESHOLD_MEAN + VARIANCE*scaleFactor;
 		logger.info("{} chose bet threshold {} and call threshold {}.", this,BET_THRESHOLD,CALL_THRESHOLD);
-		loadRolloutData();
 		
 	}
 
@@ -43,33 +36,13 @@ public class PhaseIIThresholdPlayer extends Player {
 		return scaleFactor;
 	}
 
-	private void loadRolloutData() {
-		try {
-			FileInputStream rolloutFile = new FileInputStream("Output.rollout");
-			ObjectInputStream stream = new ObjectInputStream(rolloutFile);
-			Object result = stream.readObject();
-			if(result instanceof RolloutResult){
-				rollout = (RolloutResult) result;
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public Action getAction(GameState state) {
 		if(state.getRound() == Round.PRE_FLOP){
 			double prob = rollout.winRatio(state.getActivePlayerCount(), holeCard1, holeCard2);
-			if(prob > BET_THRESHOLD_MEAN){
+			if(prob > BET_THRESHOLD){
 				return Action.BET;
-			}else if(prob > CALL_THRESHOLD_MEAN){
+			}else if(prob > CALL_THRESHOLD){
 				return Action.CALL;
 			}else{
 				return Action.FOLD;
@@ -80,9 +53,9 @@ public class PhaseIIThresholdPlayer extends Player {
 		Hand myHand = Hand.getBestHand(hole, communalCards);
 		double handStrength = HandStrengthCalculator.calculateHandStrength(hole,communalCards, myHand, state.getActivePlayerCount());
 		logger.trace("Hand strength with hand {} was {}",myHand,handStrength);
-		if(handStrength > BET_THRESHOLD_MEAN){
+		if(handStrength > BET_THRESHOLD){
 			return Action.BET;
-		}else if(handStrength > CALL_THRESHOLD_MEAN){
+		}else if(handStrength > CALL_THRESHOLD){
 			return Action.CALL;
 		}else{
 			return Action.FOLD;

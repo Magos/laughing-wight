@@ -2,6 +2,7 @@ package laughing_wight.participants;
 
 import java.util.Random;
 
+/** A randomized player. */
 public class RandomPlayer extends Player {
 
 	public RandomPlayer(String name) {

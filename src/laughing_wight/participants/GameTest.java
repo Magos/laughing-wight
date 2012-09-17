@@ -25,7 +25,7 @@ public class GameTest {
 		Dealer dealer = new Dealer();
 		Player player1 = new RandomPlayer("Alice");
 		Player player2 = new SimplePlayer("Bob");
-		Player player3 = new PhaseIIThresholdPlayer("Carol");
+		Player player3 = new ThresholdPlayer("Carol");
 		dealer.addPlayer(player1);
 		dealer.addPlayer(player2);
 		dealer.addPlayer(player3);
